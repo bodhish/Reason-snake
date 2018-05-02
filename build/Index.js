@@ -1225,6 +1225,14 @@ var canvasWidth = unsafelyUnwrapOption(map((function (prim) {
             return prim.offsetWidth;
           }), ElementRe.asHtmlElement(canvasEl)));
 
+function andThen(f, param) {
+  if (param) {
+    return Curry._1(f, param[0]);
+  } else {
+    return /* None */0;
+  }
+}
+
 var canvasHeight = unsafelyUnwrapOption(map((function (prim) {
             return prim.offsetHeight;
           }), ElementRe.asHtmlElement(canvasEl)));
@@ -1280,7 +1288,8 @@ var initialFood = /* record */[
 
 var initialWorld = /* record */[
   /* snake */initialSnake,
-  /* food */initialFood
+  /* food */initialFood,
+  /* direction : Right */1
 ];
 
 var snake = [initialWorld];
@@ -1308,33 +1317,41 @@ function moveSnake(snake) {
               }), snake);
 }
 
-setInterval((function () {
-        var oldWorld = state[0];
-        var newWorld_000 = /* snake */moveSnake(oldWorld[/* snake */0]);
-        var newWorld_001 = /* food */oldWorld[/* food */1];
-        var newWorld = /* record */[
-          newWorld_000,
-          newWorld_001
-        ];
-        state[0] = newWorld;
-        clearScene(ctx);
-        List.iter(drawSnakeCell, newWorld_000);
-        return drawFoodCell(newWorld_001);
-      }), 300);
+function handelTick() {
+  var oldWorld = state[0];
+  var newWorld_000 = /* snake */moveSnake(oldWorld[/* snake */0]);
+  var newWorld_001 = /* food */oldWorld[/* food */1];
+  var newWorld_002 = /* direction */oldWorld[/* direction */2];
+  var newWorld = /* record */[
+    newWorld_000,
+    newWorld_001,
+    newWorld_002
+  ];
+  state[0] = newWorld;
+  clearScene(ctx);
+  List.iter(drawSnakeCell, newWorld_000);
+  return drawFoodCell(newWorld_001);
+}
+
+setInterval(handelTick, 300);
 
 drawScene(ctx);
+
+var initialDirection = /* Right */1;
 
 exports.map = map;
 exports.unsafelyUnwrapOption = unsafelyUnwrapOption;
 exports.canvasEl = canvasEl;
 exports.ctx = ctx;
 exports.canvasWidth = canvasWidth;
+exports.andThen = andThen;
 exports.canvasHeight = canvasHeight;
 exports.drawScene = drawScene;
 exports.clearScene = clearScene;
 exports.drawCell = drawCell;
 exports.initialSnake = initialSnake;
 exports.initialFood = initialFood;
+exports.initialDirection = initialDirection;
 exports.initialWorld = initialWorld;
 exports.snake = snake;
 exports.drawSnakeCell = drawSnakeCell;
@@ -1342,6 +1359,7 @@ exports.drawFoodCell = drawFoodCell;
 exports.state = state;
 exports.drawSnake = drawSnake;
 exports.moveSnake = moveSnake;
+exports.handelTick = handelTick;
 /* canvasEl Not a pure module */
 
 

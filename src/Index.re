@@ -23,6 +23,11 @@ let canvasWidth =
   |> map(HtmlElement.offsetWidth)
   |> unsafelyUnwrapOption;
 
+let andThen = (f: 'a => option('b)) =>
+  fun
+  | Some(v) => f(v)
+  | None => None;
+
 let canvasHeight =
   canvasEl
   |> Element.asHtmlElement
@@ -82,14 +87,30 @@ let initialSnake = [
 
 type food = cell;
 
+type direction =
+  | Up
+  | Right;
+
+type key =
+  | ArrowUp
+  | ArrowRight
+  | Ignored;
+
 type world = {
   snake,
   food,
+  direction,
 };
 
 let initialFood = {x: 20, y: 20};
 
-let initialWorld = {snake: initialSnake, food: initialFood};
+let initialDirection = Right;
+
+let initialWorld = {
+  snake: initialSnake,
+  food: initialFood,
+  direction: initialDirection,
+};
 
 let snake = ref(initialWorld);
 
@@ -103,16 +124,19 @@ let drawSnake = snake => List.iter(drawSnakeCell, snake);
 
 let moveSnake = snake => List.map(cell => {x: cell.x + 1, y: cell.y}, snake);
 
-Js.Global.setInterval(
-  () => {
-    let oldWorld = state^;
-    let newWorld = {snake: moveSnake(oldWorld.snake), food: oldWorld.food};
-    state := newWorld;
-    clearScene(ctx);
-    drawSnake(newWorld.snake);
-    drawFoodCell(newWorld.food);
-  },
-  300,
-);
+let handelTick = () => {
+  let oldWorld = state^;
+  let newWorld = {...oldWorld, snake: moveSnake(oldWorld.snake)};
+  state := newWorld;
+  clearScene(ctx);
+  drawSnake(newWorld.snake);
+  drawFoodCell(newWorld.food);
+};
+
+Js.Global.setInterval(handelTick, 300);
+
+/* let handelEvent =evt => {
+  let old
+} */
 
 ctx |> drawScene;
