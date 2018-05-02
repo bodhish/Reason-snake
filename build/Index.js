@@ -1239,8 +1239,8 @@ function clearScene(ctx) {
   return /* () */0;
 }
 
-function drawCell(ctx, cell) {
-  Canvas2dRe.setFillStyle(ctx, /* String */0, "#1179BF");
+function drawCell(ctx, fillColor, cell) {
+  Canvas2dRe.setFillStyle(ctx, /* String */0, fillColor);
   Canvas2dRe.setStrokeStyle(ctx, /* String */0, "white");
   ctx.fillRect(Caml_int32.imul(cell[/* x */0], 10), Caml_int32.imul(cell[/* y */1], 10), 10, 10);
   ctx.strokeRect(Caml_int32.imul(cell[/* x */0], 10), Caml_int32.imul(cell[/* y */1], 10), 10, 10);
@@ -1273,17 +1273,30 @@ var initialSnake = /* :: */[
   ]
 ];
 
-var initialWorld = /* record */[/* snake */initialSnake];
+var initialFood = /* record */[
+  /* x */20,
+  /* y */20
+];
+
+var initialWorld = /* record */[
+  /* snake */initialSnake,
+  /* food */initialFood
+];
 
 var snake = [initialWorld];
 
+function drawSnakeCell(param) {
+  return drawCell(ctx, "#1179BF", param);
+}
+
+function drawFoodCell(param) {
+  return drawCell(ctx, "#af2010", param);
+}
+
 var state = [initialWorld];
 
-function drawSnake(ctx, snake) {
-  clearScene(ctx);
-  return List.iter((function (param) {
-                return drawCell(ctx, param);
-              }), snake);
+function drawSnake(snake) {
+  return List.iter(drawSnakeCell, snake);
 }
 
 function moveSnake(snake) {
@@ -1296,8 +1309,17 @@ function moveSnake(snake) {
 }
 
 setInterval((function () {
-        state[0] = /* record */[/* snake */moveSnake(state[0][/* snake */0])];
-        return drawSnake(ctx, state[0][/* snake */0]);
+        var oldWorld = state[0];
+        var newWorld_000 = /* snake */moveSnake(oldWorld[/* snake */0]);
+        var newWorld_001 = /* food */oldWorld[/* food */1];
+        var newWorld = /* record */[
+          newWorld_000,
+          newWorld_001
+        ];
+        state[0] = newWorld;
+        clearScene(ctx);
+        List.iter(drawSnakeCell, newWorld_000);
+        return drawFoodCell(newWorld_001);
       }), 300);
 
 drawScene(ctx);
@@ -1312,8 +1334,11 @@ exports.drawScene = drawScene;
 exports.clearScene = clearScene;
 exports.drawCell = drawCell;
 exports.initialSnake = initialSnake;
+exports.initialFood = initialFood;
 exports.initialWorld = initialWorld;
 exports.snake = snake;
+exports.drawSnakeCell = drawSnakeCell;
+exports.drawFoodCell = drawFoodCell;
 exports.state = state;
 exports.drawSnake = drawSnake;
 exports.moveSnake = moveSnake;
