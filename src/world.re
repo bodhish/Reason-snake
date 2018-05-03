@@ -11,3 +11,9 @@ let create = (snake, food, direction) => {
   food,
   direction,
 };
+
+let snake = t => t.snake;
+
+let food = t => t.food;
+
+let direction = t => t.direction;

@@ -19,32 +19,48 @@ let state = ref(initialWorld);
 
 let handleTick = () => {
   let oldWorld = state^;
-  let newWorld = {
-    ...oldWorld,
-    snake: Snake.move(oldWorld.snake, Direction.Right),
-  };
+  let newWorld =
+    World.create(
+      Snake.move(
+        World.snake(oldWorld),
+        World.food(oldWorld),
+        World.direction(state^),
+      ),
+      World.food(oldWorld),
+      World.direction(state^),
+    );
   state := newWorld;
   Draw.clearScene();
-  Draw.drawSnake(state^.snake);
-  Draw.drawFood(state^.food);
+  Draw.drawSnake(World.snake(state^));
+  Draw.drawFood(World.food(state^));
 };
 
 Js.Global.setInterval(handleTick, 300);
 
+let changeDirection = evt =>
+  switch (Key.parseKey(evt)) {
+  | ArrowUp => Direction.Up
+  | ArrowRight => Direction.Right
+  | ArrowLeft => Direction.Left
+  | ArrowDown => Direction.Down
+  | Ignore => World.direction(state^)
+  };
+
 let handleEvent = evt => {
   let oldWorld = state^;
-  let newWorld = {
-    ...oldWorld,
-    direction:
-      switch (Key.parseKey(evt)) {
-      | ArrowUp => Up
-      | ArrowRight => Right
-      | ArrowLeft
-      | ArrowDown
-      | Ignore => oldWorld.direction
-      },
-  };
+  let newWorld =
+    World.create(
+      Snake.move(
+        World.snake(oldWorld),
+        World.food(oldWorld),
+        changeDirection(evt),
+      ),
+      World.food(oldWorld),
+      changeDirection(evt),
+    );
+  Js.log(changeDirection(evt));
   state := newWorld;
+  Js.log(state^);
 };
 
 Webapi.Dom.EventTarget.addKeyDownEventListener(
