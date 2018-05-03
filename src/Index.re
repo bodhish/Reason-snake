@@ -1,142 +1,53 @@
 open Webapi.Dom;
 
-open Webapi.Canvas;
+let documentEventTarget =
+  document
+  |> Document.asHtmlDocument
+  |> Ext.Option.andThen(HtmlDocument.body)
+  |> Ext.Option.unsafelyUnwrapOption
+  |> Element.asEventTarget;
 
-let map = f =>
-  fun
-  | Some(v) => Some(f(v))
-  | None => None;
+let initialSnake = Snake.create([(10, 10), (11, 10), (12, 10), (13, 10)]);
 
-let unsafelyUnwrapOption =
-  fun
-  | Some(v) => v
-  | None => raise(Invalid_argument("Passed `None` to unsafelyUnwrapOption"));
+let initialFood = Food.create((15, 10));
 
-let canvasEl =
-  Document.getElementById("snake-game", document) |> unsafelyUnwrapOption;
+let initialDirection = Direction.Right;
 
-let ctx = CanvasElement.getContext2d(canvasEl);
-
-let canvasWidth =
-  canvasEl
-  |> Element.asHtmlElement
-  |> map(HtmlElement.offsetWidth)
-  |> unsafelyUnwrapOption;
-
-let andThen = (f: 'a => option('b)) =>
-  fun
-  | Some(v) => f(v)
-  | None => None;
-
-let canvasHeight =
-  canvasEl
-  |> Element.asHtmlElement
-  |> map(HtmlElement.offsetHeight)
-  |> unsafelyUnwrapOption;
-
-let drawScene = ctx =>
-  ctx
-  |> Canvas2d.clearRect(
-       ~x=0.,
-       ~y=0.,
-       ~w=float_of_int(canvasWidth),
-       ~h=float_of_int(canvasHeight),
-     );
-
-type cell = {
-  x: int,
-  y: int,
-};
-
-let clearScene = ctx =>
-  Canvas2d.clearRect(
-    ~x=0.,
-    ~y=0.,
-    ~w=float_of_int(canvasWidth),
-    ~h=float_of_int(canvasHeight),
-    ctx,
-  );
-
-type snake = list(cell);
-
-let drawCell = (ctx, fillColor, cell) => {
-  Canvas2d.setFillStyle(ctx, String, fillColor);
-  Canvas2d.setStrokeStyle(ctx, String, "white");
-  ctx
-  |> Canvas2d.fillRect(
-       ~x=float_of_int(cell.x * 10),
-       ~y=float_of_int(cell.y * 10),
-       ~w=10.,
-       ~h=10.,
-     );
-  ctx
-  |> Canvas2d.strokeRect(
-       ~x=float_of_int(cell.x * 10),
-       ~y=float_of_int(cell.y * 10),
-       ~w=10.,
-       ~h=10.,
-     );
-};
-
-let initialSnake = [
-  {x: 10, y: 10},
-  {x: 11, y: 10},
-  {x: 12, y: 10},
-  {x: 13, y: 10},
-];
-
-type food = cell;
-
-type direction =
-  | Up
-  | Right;
-
-type key =
-  | ArrowUp
-  | ArrowRight
-  | Ignored;
-
-type world = {
-  snake,
-  food,
-  direction,
-};
-
-let initialFood = {x: 20, y: 20};
-
-let initialDirection = Right;
-
-let initialWorld = {
-  snake: initialSnake,
-  food: initialFood,
-  direction: initialDirection,
-};
-
-let snake = ref(initialWorld);
-
-let drawSnakeCell = drawCell(ctx, "#1179BF");
-
-let drawFoodCell = drawCell(ctx, "#af2010");
+let initialWorld = World.create(initialSnake, initialFood, initialDirection);
 
 let state = ref(initialWorld);
 
-let drawSnake = snake => List.iter(drawSnakeCell, snake);
-
-let moveSnake = snake => List.map(cell => {x: cell.x + 1, y: cell.y}, snake);
-
-let handelTick = () => {
+let handleTick = () => {
   let oldWorld = state^;
-  let newWorld = {...oldWorld, snake: moveSnake(oldWorld.snake)};
+  let newWorld = {
+    ...oldWorld,
+    snake: Snake.move(oldWorld.snake, Direction.Right),
+  };
   state := newWorld;
-  clearScene(ctx);
-  drawSnake(newWorld.snake);
-  drawFoodCell(newWorld.food);
+  Draw.clearScene();
+  Draw.drawSnake(state^.snake);
+  Draw.drawFood(state^.food);
 };
 
-Js.Global.setInterval(handelTick, 300);
+Js.Global.setInterval(handleTick, 300);
 
-/* let handelEvent =evt => {
-  let old
-} */
+let handleEvent = evt => {
+  let oldWorld = state^;
+  let newWorld = {
+    ...oldWorld,
+    direction:
+      switch (Key.parseKey(evt)) {
+      | ArrowUp => Up
+      | ArrowRight => Right
+      | ArrowLeft
+      | ArrowDown
+      | Ignore => oldWorld.direction
+      },
+  };
+  state := newWorld;
+};
 
-ctx |> drawScene;
+Webapi.Dom.EventTarget.addKeyDownEventListener(
+  handleEvent,
+  documentEventTarget,
+);
