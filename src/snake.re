@@ -19,6 +19,17 @@ let move = (snake, food, direction) => {
   [newHead] @ newTail;
 };
 
+let checkFood = (snake, food) => {
+  let head = List.hd(snake);
+  let foodPosition =
+    if (Food.at(head, food) == true) {
+      Food.create((15, 12));
+    } else {
+      food;
+    };
+  foodPosition;
+};
+
 let create = xs => List.map(Cell.create, xs);
 
 let body = t => t;

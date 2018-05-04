@@ -4536,6 +4536,18 @@ function move(snake, food, direction) {
             ], newTail);
 }
 
+function checkFood(snake, food) {
+  var head = List.hd(snake);
+  if (Food$SnakeGame.at(head, food) === /* true */1) {
+    return Food$SnakeGame.create(/* tuple */[
+                15,
+                12
+              ]);
+  } else {
+    return food;
+  }
+}
+
 function create(xs) {
   return List.map(Cell$SnakeGame.create, xs);
 }
@@ -4546,6 +4558,7 @@ function body(t) {
 
 exports.create = create;
 exports.move = move;
+exports.checkFood = checkFood;
 exports.body = body;
 /* No side effect */
 
@@ -4606,9 +4619,15 @@ var initialWorld = World$SnakeGame.create(initialSnake, initialFood, /* Right */
 
 var state = [initialWorld];
 
+var randomFood = Food$SnakeGame.create(/* tuple */[
+      15,
+      12
+    ]);
+
 function handleTick() {
   var oldWorld = state[0];
-  var newWorld = World$SnakeGame.create(Snake$SnakeGame.move(World$SnakeGame.snake(oldWorld), World$SnakeGame.food(oldWorld), World$SnakeGame.direction(state[0])), World$SnakeGame.food(oldWorld), World$SnakeGame.direction(state[0]));
+  var food = Snake$SnakeGame.checkFood(World$SnakeGame.snake(oldWorld), World$SnakeGame.food(oldWorld));
+  var newWorld = World$SnakeGame.create(Snake$SnakeGame.move(World$SnakeGame.snake(oldWorld), food, World$SnakeGame.direction(state[0])), food, World$SnakeGame.direction(state[0]));
   state[0] = newWorld;
   Draw$SnakeGame.clearScene(/* () */0);
   Draw$SnakeGame.drawSnake(World$SnakeGame.snake(state[0]));
@@ -4637,9 +4656,7 @@ function changeDirection(evt) {
 function handleEvent(evt) {
   var oldWorld = state[0];
   var newWorld = World$SnakeGame.create(Snake$SnakeGame.move(World$SnakeGame.snake(oldWorld), World$SnakeGame.food(oldWorld), changeDirection(evt)), World$SnakeGame.food(oldWorld), changeDirection(evt));
-  console.log(changeDirection(evt));
   state[0] = newWorld;
-  console.log(state[0]);
   return /* () */0;
 }
 
@@ -4653,6 +4670,7 @@ exports.initialFood = initialFood;
 exports.initialDirection = initialDirection;
 exports.initialWorld = initialWorld;
 exports.state = state;
+exports.randomFood = randomFood;
 exports.handleTick = handleTick;
 exports.changeDirection = changeDirection;
 exports.handleEvent = handleEvent;

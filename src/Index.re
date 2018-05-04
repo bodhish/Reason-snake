@@ -21,22 +21,11 @@ let randomFood = Food.create((15, 12));
 
 let handleTick = () => {
   let oldWorld = state^;
-  let head = List.hd([World.snake(state^)]);
-  let food = World.food(oldWorld);
-  let foodStatus =
-    if (Food.at(head, food) == true) {
-      randomFood;
-    } else {
-      World.food(oldWorld);
-    };
+  let food = Snake.checkFood(World.snake(oldWorld), World.food(oldWorld));
   let newWorld =
     World.create(
-      Snake.move(
-        World.snake(oldWorld),
-        World.food(foodStatus),
-        World.direction(state^),
-      ),
-      World.food(oldWorld),
+      Snake.move(World.snake(oldWorld), food, World.direction(state^)),
+      food,
       World.direction(state^),
     );
   state := newWorld;
@@ -68,9 +57,7 @@ let handleEvent = evt => {
       World.food(oldWorld),
       changeDirection(evt),
     );
-  Js.log(changeDirection(evt));
   state := newWorld;
-  Js.log(state^);
 };
 
 Webapi.Dom.EventTarget.addKeyDownEventListener(
