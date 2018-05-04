@@ -17,13 +17,23 @@ let initialWorld = World.create(initialSnake, initialFood, initialDirection);
 
 let state = ref(initialWorld);
 
+let randomFood = Food.create((15, 12));
+
 let handleTick = () => {
   let oldWorld = state^;
+  let head = List.hd([World.snake(state^)]);
+  let food = World.food(oldWorld);
+  let foodStatus =
+    if (Food.at(head, food) == true) {
+      randomFood;
+    } else {
+      World.food(oldWorld);
+    };
   let newWorld =
     World.create(
       Snake.move(
         World.snake(oldWorld),
-        World.food(oldWorld),
+        World.food(foodStatus),
         World.direction(state^),
       ),
       World.food(oldWorld),
