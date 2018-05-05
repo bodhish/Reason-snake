@@ -19,15 +19,48 @@ let move = (snake, food, direction) => {
   [newHead] @ newTail;
 };
 
+let randomelement = l => List.nth(l, Random.int(List.length(l)));
+
+let randNum = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21];
+
 let checkFood = (snake, food) => {
   let head = List.hd(snake);
   let foodPosition =
     if (Food.at(head, food) == true) {
-      Food.create((15, 12));
+      Food.create((randomelement(randNum), randomelement(randNum)));
     } else {
       food;
     };
   foodPosition;
+};
+
+/* let at = (head: Cell.t) : bool => {
+     let (x, y) = head;
+     let tureOrFalse =
+       if (x == 0 || x == 10) {
+         true;
+       } else if (y == 0 || y == 10) {
+         true;
+       } else {
+         false;
+       };
+     tureOrFalse;
+   }; */
+/* let checkBoundary = head => {
+     let (x, y) = head;
+     let tureOrFalse =
+       if (x == 0 || x == 10) {
+         true;
+       } else if (y == 0 || y == 10) {
+         true;
+       } else {
+         false;
+       };
+     tureOrFalse;
+   }; */
+let checkHit = snake => {
+  let head = List.hd(snake);
+  head;
 };
 
 let create = xs => List.map(Cell.create, xs);
