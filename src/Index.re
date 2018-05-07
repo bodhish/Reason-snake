@@ -41,17 +41,22 @@ let handleTick = () => {
   Js.log(y1);
   let boolMon = checkBoundary(x1, y1);
   Js.log(boolMon);
-  let newWorld =
-    World.create(
-      Snake.move(
-        World.snake(oldWorld),
-        World.food(oldWorld),
-        World.direction(state^),
-      ),
-      food,
-      World.direction(state^),
-    );
-  state := newWorld;
+  let newAbc =
+    if (boolMon == false) {
+      let newWorld =
+        World.create(
+          Snake.move(
+            World.snake(oldWorld),
+            World.food(oldWorld),
+            World.direction(state^),
+          ),
+          food,
+          World.direction(state^),
+        );
+      state := newWorld;
+    } else {
+      state := oldWorld;
+    };
   Draw.clearScene();
   Draw.drawSnake(World.snake(state^));
   Draw.drawFood(World.food(state^));
