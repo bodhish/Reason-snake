@@ -17,32 +17,13 @@ let initialWorld = World.create(initialSnake, initialFood, initialDirection);
 
 let state = ref(initialWorld);
 
-let checkBoundary = (x, y) => {
-  let tureOrFalse =
-    if (x == 0 || x == 39) {
-      Js.log("Game Over");
-      true;
-    } else if (y == 0 || y == 29) {
-      Js.log("Game Over");
-      true;
-    } else {
-      false;
-    };
-  tureOrFalse;
-};
-
 let handleTick = () => {
   let oldWorld = state^;
   let food = Snake.checkFood(World.snake(oldWorld), World.food(oldWorld));
-  let hitBound = Snake.checkHit(World.snake(oldWorld));
-  Js.log(hitBound);
-  let {Cell.x: x1, Cell.y: y1} = hitBound;
-  Js.log(x1);
-  Js.log(y1);
-  let boolMon = checkBoundary(x1, y1);
-  Js.log(boolMon);
-  let newAbc =
-    if (boolMon == false) {
+  let gameOver =
+    Status.checkBoundary(Snake.checkHit(World.snake(oldWorld)));
+  let updateState =
+    if (gameOver == false) {
       let newWorld =
         World.create(
           Snake.move(
