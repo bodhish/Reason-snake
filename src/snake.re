@@ -2,18 +2,18 @@ type t = list(Cell.t);
 
 let move = (snake, food, direction) => {
   let head = List.hd(snake);
-  let newTail =
-    if (Food.at(head, food) == true) {
-      snake;
-    } else {
-      snake |> List.rev |> List.tl |> List.rev;
-    };
   let newHead =
     switch (direction) {
     | Direction.Up => Cell.create((Cell.x(head), Cell.y(head) - 1))
     | Direction.Down => Cell.create((Cell.x(head), Cell.y(head) + 1))
     | Direction.Left => Cell.create((Cell.x(head) - 1, Cell.y(head)))
     | Direction.Right => Cell.create((Cell.x(head) + 1, Cell.y(head)))
+    };
+  let newTail =
+    if (Food.at(newHead, food) == true) {
+      snake;
+    } else {
+      snake |> List.rev |> List.tl |> List.rev;
     };
   [newHead] @ newTail;
 };

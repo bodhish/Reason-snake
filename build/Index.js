@@ -6456,7 +6456,6 @@ var Food$SnakeGame = __webpack_require__(16);
 
 function move(snake, food, direction) {
   var head = List.hd(snake);
-  var newTail = Food$SnakeGame.at(head, food) === /* true */1 ? snake : List.rev(List.tl(List.rev(snake)));
   var newHead;
   switch (direction) {
     case 0 : 
@@ -6485,6 +6484,7 @@ function move(snake, food, direction) {
         break;
     
   }
+  var newTail = Food$SnakeGame.at(newHead, food) === /* true */1 ? snake : List.rev(List.tl(List.rev(snake)));
   return Pervasives.$at(/* :: */[
               newHead,
               /* [] */0
@@ -6723,16 +6723,21 @@ var initialWorld = World$SnakeGame.create(initialSnake, initialFood, /* Right */
 
 var state = [initialWorld];
 
+function updateState(gameOver, oldWorld, newWorld) {
+  if (gameOver) {
+    Draw$SnakeGame.drawWord("game Over");
+    return oldWorld;
+  } else {
+    return newWorld;
+  }
+}
+
 function handleTick() {
   var oldWorld = state[0];
   var food = Snake$SnakeGame.checkFood(World$SnakeGame.snake(oldWorld), World$SnakeGame.food(oldWorld));
-  var gameOver = Status$SnakeGame.checkBoundary(Snake$SnakeGame.checkHit(World$SnakeGame.snake(oldWorld)));
-  if (gameOver) {
-    state[0] = oldWorld;
-  } else {
-    var newWorld = World$SnakeGame.create(Snake$SnakeGame.move(World$SnakeGame.snake(oldWorld), World$SnakeGame.food(oldWorld), World$SnakeGame.direction(state[0])), food, World$SnakeGame.direction(state[0]));
-    state[0] = newWorld;
-  }
+  var newWorld = World$SnakeGame.create(Snake$SnakeGame.move(World$SnakeGame.snake(oldWorld), World$SnakeGame.food(oldWorld), World$SnakeGame.direction(state[0])), food, World$SnakeGame.direction(state[0]));
+  var gameOver = Status$SnakeGame.checkBoundary(Snake$SnakeGame.checkHit(World$SnakeGame.snake(newWorld)));
+  state[0] = updateState(gameOver, oldWorld, newWorld);
   Draw$SnakeGame.clearScene(/* () */0);
   Draw$SnakeGame.drawSnake(World$SnakeGame.snake(state[0]));
   return Draw$SnakeGame.drawFood(World$SnakeGame.food(state[0]));
@@ -6759,8 +6764,10 @@ function changeDirection(evt) {
 
 function handleEvent(evt) {
   var oldWorld = state[0];
-  var newWorld = World$SnakeGame.create(Snake$SnakeGame.move(World$SnakeGame.snake(oldWorld), World$SnakeGame.food(oldWorld), changeDirection(evt)), World$SnakeGame.food(oldWorld), changeDirection(evt));
-  state[0] = newWorld;
+  var food = Snake$SnakeGame.checkFood(World$SnakeGame.snake(oldWorld), World$SnakeGame.food(oldWorld));
+  var newWorld = World$SnakeGame.create(Snake$SnakeGame.move(World$SnakeGame.snake(oldWorld), World$SnakeGame.food(oldWorld), changeDirection(evt)), food, changeDirection(evt));
+  var gameOver = Status$SnakeGame.checkBoundary(Snake$SnakeGame.checkHit(World$SnakeGame.snake(newWorld)));
+  state[0] = updateState(gameOver, oldWorld, newWorld);
   return /* () */0;
 }
 
@@ -6774,6 +6781,7 @@ exports.initialFood = initialFood;
 exports.initialDirection = initialDirection;
 exports.initialWorld = initialWorld;
 exports.state = state;
+exports.updateState = updateState;
 exports.handleTick = handleTick;
 exports.changeDirection = changeDirection;
 exports.handleEvent = handleEvent;
@@ -6966,6 +6974,12 @@ function drawCell(fillColor, cell) {
   return /* () */0;
 }
 
+function drawWord(text) {
+  ctx.strokeText(text, 10, 10, undefined);
+  console.log("Draw");
+  return /* () */0;
+}
+
 function drawSnakeCell(cell) {
   return drawCell("#1179BF", cell);
 }
@@ -6998,6 +7012,7 @@ function clearScene() {
 exports.canvasEl = canvasEl;
 exports.ctx = ctx;
 exports.drawCell = drawCell;
+exports.drawWord = drawWord;
 exports.drawSnakeCell = drawSnakeCell;
 exports.drawSnake = drawSnake;
 exports.drawFoodCell = drawFoodCell;
@@ -9724,7 +9739,7 @@ exports.direction = direction;
 function checkBoundary(hitBoundary) {
   var y1 = hitBoundary[/* y */1];
   var x1 = hitBoundary[/* x */0];
-  if (x1 === 0 || x1 === 39 || y1 === 0 || y1 === 29) {
+  if (x1 === -1 || x1 === 40 || y1 === -1 || y1 === 30) {
     console.log("Game Over");
     return /* true */1;
   } else {

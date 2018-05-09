@@ -18,6 +18,7 @@ let drawCell = (fillColor, cell) => {
     ~h=10.,
     ctx,
   );
+  /* ctx.strokeRect(10, 10, 100, 100); */
   Canvas2d.strokeRect(
     ~x=float_of_int(Cell.x(cell) * 10),
     ~y=float_of_int(Cell.y(cell) * 10),
@@ -25,6 +26,11 @@ let drawCell = (fillColor, cell) => {
     ~h=10.,
     ctx,
   );
+};
+
+let drawWord = (text: string) => {
+  Canvas2d.strokeText(text, ~x=10., ~y=10., ctx);
+  Js.log("Draw");
 };
 
 let drawSnakeCell = cell => drawCell("#1179BF", cell);
