@@ -1,6 +1,5 @@
 type t = list(Cell.t);
 
-/* Snake.create([(10, 10), (11, 10), (12, 10), (13, 10)]); */
 let move = (snake, food, direction) => {
   let head = List.hd(snake);
   let newTail =
@@ -34,30 +33,6 @@ let checkFood = (snake, food) => {
   foodPosition;
 };
 
-/* let at = (head: Cell.t) : bool => {
-     let (x, y) = head;
-     let tureOrFalse =
-       if (x == 0 || x == 10) {
-         true;
-       } else if (y == 0 || y == 10) {
-         true;
-       } else {
-         false;
-       };
-     tureOrFalse;
-   }; */
-/* let checkBoundary = head => {
-     let (x, y) = head;
-     let tureOrFalse =
-       if (x == 0 || x == 10) {
-         true;
-       } else if (y == 0 || y == 10) {
-         true;
-       } else {
-         false;
-       };
-     tureOrFalse;
-   }; */
 let checkHit = snake => {
   let head = List.hd(snake);
   head;

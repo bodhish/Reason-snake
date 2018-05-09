@@ -69,8 +69,6 @@ let handleEvent = evt => {
   state := newWorld;
 };
 
-let gameOver = Js.log("Game Over");
-
 Webapi.Dom.EventTarget.addKeyDownEventListener(
   handleEvent,
   documentEventTarget,

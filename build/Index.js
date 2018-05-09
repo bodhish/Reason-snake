@@ -6764,13 +6764,9 @@ function handleEvent(evt) {
   return /* () */0;
 }
 
-console.log("Game Over");
-
 documentEventTarget.addEventListener("keydown", handleEvent);
 
 var initialDirection = /* Right */3;
-
-var gameOver = /* () */0;
 
 exports.documentEventTarget = documentEventTarget;
 exports.initialSnake = initialSnake;
@@ -6781,7 +6777,6 @@ exports.state = state;
 exports.handleTick = handleTick;
 exports.changeDirection = changeDirection;
 exports.handleEvent = handleEvent;
-exports.gameOver = gameOver;
 /* documentEventTarget Not a pure module */
 
 
