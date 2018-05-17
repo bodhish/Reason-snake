@@ -6723,10 +6723,10 @@ var initialWorld = World$SnakeGame.create(initialSnake, initialFood, /* Right */
 
 var state = [initialWorld];
 
-function updateState(gameOver, oldWorld, newWorld) {
+function updateState(gameOver, newWorld) {
   if (gameOver) {
     Draw$SnakeGame.drawWord("game Over");
-    return oldWorld;
+    return initialWorld;
   } else {
     return newWorld;
   }
@@ -6737,7 +6737,7 @@ function handleTick() {
   var food = Snake$SnakeGame.checkFood(World$SnakeGame.snake(oldWorld), World$SnakeGame.food(oldWorld));
   var newWorld = World$SnakeGame.create(Snake$SnakeGame.move(World$SnakeGame.snake(oldWorld), World$SnakeGame.food(oldWorld), World$SnakeGame.direction(state[0])), food, World$SnakeGame.direction(state[0]));
   var gameOver = Status$SnakeGame.checkBoundary(Snake$SnakeGame.checkHit(World$SnakeGame.snake(newWorld)));
-  state[0] = updateState(gameOver, oldWorld, newWorld);
+  state[0] = updateState(gameOver, newWorld);
   Draw$SnakeGame.clearScene(/* () */0);
   Draw$SnakeGame.drawSnake(World$SnakeGame.snake(state[0]));
   return Draw$SnakeGame.drawFood(World$SnakeGame.food(state[0]));
@@ -6747,15 +6747,32 @@ setInterval(handleTick, 300);
 
 function changeDirection(evt) {
   var match = Key$SnakeGame.parseKey(evt);
+  var match$1 = World$SnakeGame.direction(state[0]);
   switch (match) {
     case 0 : 
-        return /* Up */0;
+        if (match$1 !== 1) {
+          return /* Up */0;
+        } else {
+          return World$SnakeGame.direction(state[0]);
+        }
     case 1 : 
-        return /* Right */3;
+        if (match$1 !== 2) {
+          return /* Right */3;
+        } else {
+          return World$SnakeGame.direction(state[0]);
+        }
     case 2 : 
-        return /* Down */1;
+        if (match$1 !== 0) {
+          return /* Down */1;
+        } else {
+          return World$SnakeGame.direction(state[0]);
+        }
     case 3 : 
-        return /* Left */2;
+        if (match$1 >= 3) {
+          return World$SnakeGame.direction(state[0]);
+        } else {
+          return /* Left */2;
+        }
     case 4 : 
         return World$SnakeGame.direction(state[0]);
     
@@ -6767,7 +6784,7 @@ function handleEvent(evt) {
   var food = Snake$SnakeGame.checkFood(World$SnakeGame.snake(oldWorld), World$SnakeGame.food(oldWorld));
   var newWorld = World$SnakeGame.create(Snake$SnakeGame.move(World$SnakeGame.snake(oldWorld), World$SnakeGame.food(oldWorld), changeDirection(evt)), food, changeDirection(evt));
   var gameOver = Status$SnakeGame.checkBoundary(Snake$SnakeGame.checkHit(World$SnakeGame.snake(newWorld)));
-  state[0] = updateState(gameOver, oldWorld, newWorld);
+  state[0] = updateState(gameOver, newWorld);
   return /* () */0;
 }
 

@@ -17,13 +17,14 @@ let initialWorld = World.create(initialSnake, initialFood, initialDirection);
 
 let state = ref(initialWorld);
 
-let updateState = (gameOver, oldWorld, newWorld) =>
+let updateState = (gameOver, newWorld) =>
   if (gameOver == false) {
     newWorld;
   } else {
     let newString = "game Over";
     Draw.drawWord(newString);
-    oldWorld;
+    /* To DO: Add Game Over message and reload */
+    initialWorld;
   };
 
 let handleTick = () => {
@@ -41,7 +42,7 @@ let handleTick = () => {
     );
   let gameOver =
     Status.checkBoundary(Snake.checkHit(World.snake(newWorld)));
-  state := updateState(gameOver, oldWorld, newWorld);
+  state := updateState(gameOver, newWorld);
   Draw.clearScene();
   Draw.drawSnake(World.snake(state^));
   Draw.drawFood(World.food(state^));
@@ -50,12 +51,16 @@ let handleTick = () => {
 Js.Global.setInterval(handleTick, 300);
 
 let changeDirection = evt =>
-  switch (Key.parseKey(evt)) {
-  | ArrowUp => Direction.Up
-  | ArrowRight => Direction.Right
-  | ArrowLeft => Direction.Left
-  | ArrowDown => Direction.Down
-  | Ignore => World.direction(state^)
+  switch (Key.parseKey(evt), World.direction(state^)) {
+  | (ArrowUp, Direction.Down)
+  | (ArrowDown, Direction.Up)
+  | (ArrowRight, Direction.Left)
+  | (ArrowLeft, Direction.Right) => World.direction(state^)
+  | (ArrowUp, _) => Direction.Up
+  | (ArrowDown, _) => Direction.Down
+  | (ArrowLeft, _) => Direction.Left
+  | (ArrowRight, _) => Direction.Right
+  | (_, _) => World.direction(state^)
   };
 
 let handleEvent = evt => {
@@ -73,7 +78,7 @@ let handleEvent = evt => {
     );
   let gameOver =
     Status.checkBoundary(Snake.checkHit(World.snake(newWorld)));
-  state := updateState(gameOver, oldWorld, newWorld);
+  state := updateState(gameOver, newWorld);
 };
 
 Webapi.Dom.EventTarget.addKeyDownEventListener(
