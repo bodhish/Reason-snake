@@ -1,4 +1,5 @@
 # reason-snake
+<a href="http://bodhish.in/Reason-snake/src">Click here to play the Game</a>
 
 Run this project:
 
