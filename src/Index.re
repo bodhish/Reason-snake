@@ -19,10 +19,12 @@ let state = ref(initialWorld);
 
 let updateState = (gameOver, newWorld) =>
   if (gameOver == false) {
+    Draw.clearScene();
+    Draw.drawSnake(World.snake(newWorld));
+    Draw.drawFood(World.food(newWorld));
     newWorld;
   } else {
-    let newString = "game Over";
-    Draw.drawWord(newString);
+    Draw.drawWord("Lets Start Again");
     /* To DO: Add Game Over message and reload */
     initialWorld;
   };
@@ -43,9 +45,6 @@ let handleTick = () => {
   let gameOver =
     Status.checkBoundary(Snake.checkHit(World.snake(newWorld)));
   state := updateState(gameOver, newWorld);
-  Draw.clearScene();
-  Draw.drawSnake(World.snake(state^));
-  Draw.drawFood(World.food(state^));
 };
 
 Js.Global.setInterval(handleTick, 300);

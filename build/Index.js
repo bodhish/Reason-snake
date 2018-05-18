@@ -6725,9 +6725,12 @@ var state = [initialWorld];
 
 function updateState(gameOver, newWorld) {
   if (gameOver) {
-    Draw$SnakeGame.drawWord("game Over");
+    Draw$SnakeGame.drawWord("Lets Start Again");
     return initialWorld;
   } else {
+    Draw$SnakeGame.clearScene(/* () */0);
+    Draw$SnakeGame.drawSnake(World$SnakeGame.snake(newWorld));
+    Draw$SnakeGame.drawFood(World$SnakeGame.food(newWorld));
     return newWorld;
   }
 }
@@ -6738,9 +6741,7 @@ function handleTick() {
   var newWorld = World$SnakeGame.create(Snake$SnakeGame.move(World$SnakeGame.snake(oldWorld), World$SnakeGame.food(oldWorld), World$SnakeGame.direction(state[0])), food, World$SnakeGame.direction(state[0]));
   var gameOver = Status$SnakeGame.checkBoundary(Snake$SnakeGame.checkHit(World$SnakeGame.snake(newWorld)));
   state[0] = updateState(gameOver, newWorld);
-  Draw$SnakeGame.clearScene(/* () */0);
-  Draw$SnakeGame.drawSnake(World$SnakeGame.snake(state[0]));
-  return Draw$SnakeGame.drawFood(World$SnakeGame.food(state[0]));
+  return /* () */0;
 }
 
 setInterval(handleTick, 300);
@@ -6992,8 +6993,7 @@ function drawCell(fillColor, cell) {
 }
 
 function drawWord(text) {
-  ctx.strokeText(text, 10, 10, undefined);
-  console.log("Draw");
+  ctx.strokeText(text, 175, 125, undefined);
   return /* () */0;
 }
 

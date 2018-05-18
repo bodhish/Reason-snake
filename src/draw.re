@@ -28,10 +28,8 @@ let drawCell = (fillColor, cell) => {
   );
 };
 
-let drawWord = (text: string) => {
-  Canvas2d.strokeText(text, ~x=10., ~y=10., ctx);
-  Js.log("Draw");
-};
+let drawWord = (text: string) =>
+  Canvas2d.strokeText(text, ~x=175., ~y=125., ctx);
 
 let drawSnakeCell = cell => drawCell("#1179BF", cell);
 
